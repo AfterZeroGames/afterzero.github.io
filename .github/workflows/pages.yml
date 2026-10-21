@@ -7,6 +7,7 @@ on:
   workflow_dispatch:
 permissions:
   contents: write
+  pages: write
 concurrency:
   group: pages
 jobs:
@@ -21,3 +22,7 @@ jobs:
           git add -A
           git -c user.name="After Zero bot" -c user.email="afterzero.contact@gmail.com" commit -qm "site"
           git push -qf "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" gh-pages
+      - name: Ask GitHub Pages to rebuild (pushes made with the workflow token don't trigger it)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api -X POST repos/${{ github.repository }}/pages/builds || true
